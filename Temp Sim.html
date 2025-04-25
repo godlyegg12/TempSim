@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Temperature Simulation Thing</title>
+</head>
+
+<body>
+<canvas id="canvas" width="1" height="1" style="border:1px solid #000000">stuff!</canvas>
+</body>
+
+<script>
+canvas = document.getElementById("canvas");
+canv = canvas.getContext("2d");
+
+var width = 500;
+var height = 500;
+var scale = 10;
+var grid = new Array();
+
+for(var x = 0; x < width/scale; x++){
+	grid[x] = new Array();
+	for(var y = 0; y < height/scale; y++){
+		grid[x][y] = Math.random();
+	}	
+}
+
+canvas.width = width;
+canvas.height = height;
+
+setInterval(update,100);
+
+
+function draw(){
+	for(var x = 0; x < width/scale; x++){
+		for(var y = 0; y < height/scale; y++){
+			canv.strokeRect(x*scale,y*scale,scale,scale);
+		}
+	}
+
+	for(var x = 0; x < width/scale; x++){
+		for(var y = 0; y < height/scale; y++){
+			var t = grid[x][y];
+			if(t <= 0.2){
+				canv.fillStyle = "red";
+			}else if(t <= 0.4){
+				canv.fillStyle = "orange";
+			}else if(t <= 0.6){
+				canv.fillStyle = "yellow";
+			}else if(t <= 0.8){
+				canv.fillStyle = "blue";
+			}else{
+				canv.fillStyle = "white";
+			}
+			canv.fillRect(x*scale+1,y*scale+1,scale-2,scale-2);
+		}
+	}
+}
+
+function simulate(){
+
+	for(var x = 0; x < width/scale; x++){
+		for(var y = 0; y < height/scale; y++){
+
+			var tempSpeed = 1;
+
+			var total = grid[x][y];
+			var count = 1;
+			if(x+1 < width/scale){
+				total += grid[x+1][y];
+				count ++;
+			}
+			if(x-1 > 0){
+				total += grid[x-1][y];
+				count ++;
+			}
+			if(y+1 < height/scale){
+				total += grid[x][y+1];
+				count ++;
+			}
+			if(y-1 > 0){
+				total += grid[x][y-1];
+				count ++;
+			}
+			if(x+1 < width/scale && y+1 < width/scale){
+				total += grid[x+1][y+1];
+				count ++;
+			}
+			if(x-1 > 0 && y-1 > 0){
+				total += grid[x-1][y-1];
+				count ++;
+			}
+			if(x-1 > 0 && y+1 < height/scale){
+				total += grid[x-1][y+1];
+				count ++;
+			}
+			if(x+1 < width/scale && y-1 > 0){
+				total += grid[x+1][y-1];
+				count ++;
+			}
+
+			var avg = total/count;
+			grid[x][y] -= avg * tempSpeed;
+			if(x+1 < width/scale){
+				grid[x+1][y] += (avg * tempSpeed)/8;
+			}
+			if(x-1 > 0){
+				grid[x-1][y] += (avg * tempSpeed)/8;
+			}
+			if(y+1 < height/scale){
+				grid[x][y+1] += (avg * tempSpeed)/8;
+			}
+			if(y-1 > 0){
+				grid[x][y-1] += (avg * tempSpeed)/8;
+			}
+			if(x+1 < width/scale && y+1 < width/scale){
+				grid[x+1][y+1] += (avg * tempSpeed)/8;
+			}
+			if(x-1 > 0 && y-1 > 0){
+				grid[x-1][y-1] += (avg * tempSpeed)/8;
+			}
+			if(x-1 > 0 && y+1 < height/scale){
+				grid[x-1][y+1] += (avg * tempSpeed)/8;
+			}
+			if(x+1 < width/scale && y-1 > 0){
+				grid[x+1][y-1] += (avg * tempSpeed)/8;
+			}
+		}
+	}
+
+}
+
+function update(){
+	draw();
+	simulate();
+}
+</script>
+</html>
